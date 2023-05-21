@@ -1,5 +1,5 @@
 import { nanoid } from 'nanoid'
-import { checkToken, getUrlIdDB, insertUrlDB } from '../respository/urls.repository.js';
+import { checkToken, getUrlDB, getUrlIdDB, insertUrlDB, updateVisitCountDB } from '../respository/urls.repository.js';
 
 export async function createURL(req, res) {
     const { authorization} = req.headers;
@@ -13,8 +13,7 @@ export async function createURL(req, res) {
         if (!session.rowCount) return res.sendStatus(401); 
         const insertUrl = await insertUrlDB(url, session.rows[0].user_id, urlShortened);
         console.log(insertUrl.rows[0]);
-       
-        // res.status(201).send(object);
+    
         res.status(201).send(insertUrl.rows[0]);
     } catch (err) {
         res.status(500).send(err.message);
@@ -25,6 +24,7 @@ export async function getIdUrl(req, res) {
 
     try {
         const url = await getUrlIdDB(req.params.id);
+        if (!url.rowCount) return res.status(404).send("Url não encontrada!");
         const object = {
             id: url.rows[0].url_id,
             shortUrl: url.rows[0].short_url,
@@ -35,4 +35,19 @@ export async function getIdUrl(req, res) {
         res.status(500).send(err.message);
     }
 
+}
+
+export async function urlRedirect(req, res) {
+    const { shortUrl } = req.params;
+
+    try {
+        const short_url = await getUrlDB(shortUrl);
+        console.log(short_url.rows[0]);
+        if (!short_url.rows) return res.status(404).send("Url não encontrada!");
+        const update = updateVisitCountDB(shortUrl);
+        res.redirect(short_url.rows[0].url);
+        
+    } catch (err) {
+        res.status(500).send(err.message);
+    }
 }

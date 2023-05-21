@@ -15,3 +15,11 @@ export async function getUrlIdDB(id) {
     
     return db.query(`select * from urls where url_id = $1`, [id]);
 }
+
+export async function getUrlDB(short_url) {
+    return db.query(`select * from urls where short_url = $1`, [short_url]);
+}
+
+export async function updateVisitCountDB(short_url) {
+    return db.query(`update urls set visit_count = visit_count + 1 where short_url = $1`, [short_url]);
+}
