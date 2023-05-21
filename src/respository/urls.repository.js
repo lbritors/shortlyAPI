@@ -11,7 +11,7 @@ export async function checkToken(authorization) {
 
 }
 
-export async function getUrlDB(urlShortened) {
-
-    return db.query(`select * from urls where short_url = $1`, [urlShortened]);
+export async function getUrlIdDB(id) {
+    
+    return db.query(`select * from urls where url_id = $1`, [id]);
 }
