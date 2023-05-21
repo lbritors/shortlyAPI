@@ -1,5 +1,5 @@
 import { nanoid } from 'nanoid'
-import { checkToken, getUrlDB, getUrlIdDB, insertUrlDB, updateVisitCountDB } from '../respository/urls.repository.js';
+import { checkOwnerDB, checkToken, getUrlDB, getUrlIdDB, insertUrlDB, updateVisitCountDB, deleteUrlDB } from '../respository/urls.repository.js';
 
 export async function createURL(req, res) {
     const { authorization} = req.headers;
@@ -50,4 +50,24 @@ export async function urlRedirect(req, res) {
     } catch (err) {
         res.status(500).send(err.message);
     }
+}
+
+export async function deleteUrlId(req, res) {
+    const { id } = req.params;
+    const { authorization} = req.headers;
+    const token = authorization?.replace("Bearer ", "");
+
+    try {
+        const session = await checkToken(token);
+        if (!token || !session.rowCount) return res.sendStatus(401); 
+        const exists = await getUrlIdDB(id);
+        if (!exists.rowCount) return res.sendStatus(404);
+        const url = await checkOwnerDB(id, token);
+        if (!url.rowCount) return res.sendStatus(401);
+        const result = await deleteUrlDB(id)
+        res.sendStatus(204);
+    } catch (err) {
+        res.status(500).send(err.message);
+    }
+
 }

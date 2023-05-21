@@ -23,3 +23,12 @@ export async function getUrlDB(short_url) {
 export async function updateVisitCountDB(short_url) {
     return db.query(`update urls set visit_count = visit_count + 1 where short_url = $1`, [short_url]);
 }
+
+export async function checkOwnerDB(id, token) {
+    return db.query(`select sessions.user_id, sessions.u_token, urls.user_id from sessions, urls where url_id = $1
+    and sessions.user_id = urls.user_id and u_token = $2`, [id, token]);
+}
+
+export async function deleteUrlDB(id) {
+    return db.query(`delete from urls where url_id = $1`, [id]);
+}
