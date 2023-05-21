@@ -2,9 +2,9 @@ drop table users, urls, sessions cascade;
 
 create table if not exists users (
 u_id serial primary key,
-u_name varchar(60) not null,
+name varchar(60) not null,
 email varchar(50) not null unique,
-u_password varchar(20) not null,
+password varchar(100) not null,
 createdAt timestamp default Now() not null
 );
 
