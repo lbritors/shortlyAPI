@@ -1,6 +1,4 @@
-import { db } from "../database/database.connection.js";
 import { signUpUserDB, userExistsDB } from "../respository/users.repository.js";
-
 
 
 export async function signUp(req, res) {
