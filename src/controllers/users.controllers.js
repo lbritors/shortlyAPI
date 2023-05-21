@@ -1,5 +1,6 @@
-import { signUpUserDB, userExistsDB } from "../respository/users.repository.js";
-
+import { signInUserDB, signUpUserDB, userExistsDB } from "../respository/users.repository.js";
+import bcrypt from "bcrypt";
+import { v4 as uuid } from "uuid";
 
 export async function signUp(req, res) {
 
@@ -12,5 +13,20 @@ export async function signUp(req, res) {
     } catch (err) {
         res.status(500).send(err.message);
         
+    }
+}
+
+export async function signIn(req, res) {
+    const { email, password } = req.body;
+    try {
+        const usersRes = await userExistsDB(req.body);
+        if (!usersRes.rowCount || !bcrypt.compareSync(password, usersRes.rows[0].password)) return res.sendStatus(401);
+        const token = uuid();
+        const session = [usersRes.rows[0].u_id, token]
+        const sessionRes = await signInUserDB(session);
+        res.status(200).send({token : token});
+        
+    } catch (err) {
+        res.status(500).send(err.message);
     }
 }
