@@ -1,4 +1,4 @@
-import { getUserDB, signInUserDB, signUpUserDB, userExistsDB } from "../respository/users.repository.js";
+import { getRankingDB, getUserDB, signInUserDB, signUpUserDB, userExistsDB } from "../respository/users.repository.js";
 import bcrypt from "bcrypt";
 import { v4 as uuid } from "uuid";
 import { checkToken, getUrlByUserDB} from "../respository/urls.repository.js";
@@ -57,6 +57,17 @@ export async function getUserInfo(req, res) {
         }
 
         res.status(200).send(object);
+    } catch (err) {
+        res.status(500).send(err.message);
+    }
+}
+
+export async function getRanking(req, res) {
+    try {
+        const limit = 10;
+        const result = await getRankingDB(limit)
+        console.log(result);
+        res.status(200).send(result.rows);
     } catch (err) {
         res.status(500).send(err.message);
     }

@@ -24,3 +24,11 @@ export async function getUserDB(id) {
      and urls.user_id = users.u_id
      group by users.u_id`, [id]);
 }
+
+export async function getRankingDB(limit) {
+    return db.query(`select users.u_id as "id", users.name, sum(urls.visit_count) as "visitCount", count(urls.short_url) as "linksCount" from users
+    left join urls on users.u_id = urls.user_id
+    group by users.u_id
+    order by "visitCount" DESC
+    limit $1;`, [limit]);
+}
