@@ -7,10 +7,8 @@ export async function insertUrlDB(url, user_id, urlShortened) {
 
 export async function checkToken(authorization) {
     
-    return db.query(`select * from sessions where u_token = $1`, [authorization]) 
-
+    return db.query(`select * from sessions where u_token = $1`, [authorization]); 
 }
-
 export async function getUrlIdDB(id) {
     
     return db.query(`select * from urls where url_id = $1`, [id]);
@@ -31,4 +29,8 @@ export async function checkOwnerDB(id, token) {
 
 export async function deleteUrlDB(id) {
     return db.query(`delete from urls where url_id = $1`, [id]);
+}
+
+export async function getUrlByUserDB(id) {
+    return db.query(`select * from urls where urls.user_id = $1`, [id]);
 }

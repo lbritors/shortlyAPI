@@ -1,6 +1,7 @@
-import { signInUserDB, signUpUserDB, userExistsDB } from "../respository/users.repository.js";
+import { getUserDB, signInUserDB, signUpUserDB, userExistsDB } from "../respository/users.repository.js";
 import bcrypt from "bcrypt";
 import { v4 as uuid } from "uuid";
+import { checkToken, getUrlByUserDB} from "../respository/urls.repository.js";
 
 export async function signUp(req, res) {
 
@@ -17,7 +18,7 @@ export async function signUp(req, res) {
 }
 
 export async function signIn(req, res) {
-    const { email, password } = req.body;
+    const { password } = req.body;
     try {
         const usersRes = await userExistsDB(req.body);
         if (!usersRes.rowCount || !bcrypt.compareSync(password, usersRes.rows[0].password)) return res.sendStatus(401);
@@ -26,6 +27,39 @@ export async function signIn(req, res) {
         const sessionRes = await signInUserDB(session);
         res.status(200).send({token : token});
         
+    } catch (err) {
+        res.status(500).send(err.message);
+    }
+}
+
+export async function getUserInfo(req, res) {
+    const { authorization} = req.headers;
+    const token = authorization?.replace("Bearer ", "");
+
+    try {
+        const session = await checkToken(token);
+        if (!session.rowCount) return res.sendStatus(401); 
+        const userInf = await getUserDB(session.rows[0].user_id);
+        const usersUrl = await getUrlByUserDB(session.rows[0].user_id);
+      
+        console.log(usersUrl.rows);
+    
+        const object = {
+            id: userInf.rows[0].u_id,
+            name: userInf.rows[0].name,
+            visitCount: userInf.rows[0].sum,
+            shortenedUrls: usersUrl.rows.map(u => {
+                return ({
+                    id: u.url_id,
+                    shortUrl: u.short_url,
+                    url: u.url,
+                    visitCount: u.visit_count
+                })
+            })
+        }
+        console.log(object);
+
+        res.send(object);
     } catch (err) {
         res.status(500).send(err.message);
     }
