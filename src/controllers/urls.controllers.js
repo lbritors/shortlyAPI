@@ -42,8 +42,7 @@ export async function urlRedirect(req, res) {
 
     try {
         const short_url = await getUrlDB(shortUrl);
-        console.log(short_url.rows[0]);
-        if (!short_url.rows) return res.status(404).send("Url não encontrada!");
+        if (!short_url.rowCount) return res.status(404).send("Url não encontrada!");
         const update = updateVisitCountDB(shortUrl);
         res.redirect(short_url.rows[0].url);
         
