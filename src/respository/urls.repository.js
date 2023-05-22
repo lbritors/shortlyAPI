@@ -2,7 +2,8 @@ import { db } from "../database/database.connection.js";
 
 export async function insertUrlDB(url, user_id, urlShortened) {
     
-    return db.query(`insert into urls (user_id, url, short_url) values ($1, $2, $3) returning url_id, short_url`, [user_id, url, urlShortened]);
+    return db.query(`insert into urls (user_id, url, short_url) values ($1, $2, $3)
+     returning url_id as "id", short_url as "shortUrl"`, [user_id, url, urlShortened]);
 }
 
 export async function checkToken(authorization) {
