@@ -41,8 +41,6 @@ export async function getUserInfo(req, res) {
         if (!session.rowCount) return res.sendStatus(401); 
         const userInf = await getUserDB(session.rows[0].user_id);
         const usersUrl = await getUrlByUserDB(session.rows[0].user_id);
-      
-        console.log(usersUrl.rows);
     
         const object = {
             id: userInf.rows[0].u_id,
@@ -57,9 +55,8 @@ export async function getUserInfo(req, res) {
                 })
             })
         }
-        console.log(object);
 
-        res.send(object);
+        res.status(200).send(object);
     } catch (err) {
         res.status(500).send(err.message);
     }
